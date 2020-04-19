@@ -1,0 +1,136 @@
+body {
+    margin: 0px;
+    padding: 0px;
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
+
+.container-left {
+    border: solid #eee;
+    border-width: 0px 0px 1px 1px;
+}
+.container-main {
+    /*height: calc(100vh - 270px);*/
+    border: solid #eee;
+    border-width: 0px 1px 1px 1px;
+    padding: 0px;
+}
+.container-footer {
+    height: 270px !important;
+    border: solid #eee;
+    border-width: 0px 1px 1px 1px;
+    padding: 0px;
+}
+
+.page-header-title {
+    margin-top: 3px;
+    margin-bottom: 0px;
+    padding-left: 10px;
+    font-size: 16px;
+    font-weight: bolder;
+    text-align: left;
+}
+
+.page-header-btn {
+    margin-bottom: 0px;
+    text-align: right;
+}
+
+.page-header-divider {
+    margin-top: 10px;
+    margin-bottom: 15px;
+    background: 0 0;
+    border-top: 1px solid #e8eaec;
+}
+
+.icon-setting {
+    position: absolute;
+    left: 16px;
+    bottom: 20px;
+    font-size: 23px;
+}
+.icon-setting:hover {
+    color: #409eff;
+}
+
+.custom-tree-node {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 14px;
+    padding-right: 8px;
+}
+
+.tree-item-div div {
+    opacity: 0;
+}
+
+.tree-item-div:hover div {
+    opacity: 1;
+}
+
+/* ProjectList样式 */
+
+.list{
+    margin-right: 10px;
+    font-size: 12px;
+    text-align: left;
+}
+.list-divider-title {
+    margin-top: 10px;
+    margin-bottom: 15px;
+    background: 0 0;
+    border-top: 1px solid #e8eaec;
+}
+.list-title {
+    font-size: 17px;
+    font-weight: bolder;
+    margin-top: 3px;
+    margin-bottom: 0px;
+}
+
+.list-div-active {
+    background-color: rgba(144, 147, 153, 0.34);
+    border-radius: 3px; /*设置圆角*/
+}
+
+
+/* footer窗体样式 */
+.toolbar {
+    position: absolute;
+    right: 19px;
+    bottom: 236px;
+}
+.toolbar-button {
+    margin-right: 15px;
+    font-size: 23px !important;
+}
+
+.toolbar-button-run {
+    color: #23ee44;
+}
+
+.toolbar-button-run:hover {
+    background-color: rgba(144, 147, 153, 0.34);
+    border-radius: 3px; /*设置圆角*/
+}
+
+.toolbar-button-stop {
+    color: #ff160e;
+}
+
+.toolbar-button-stop:hover {
+    background-color: rgba(144, 147, 153, 0.34);
+    border-radius: 3px; /*设置圆角*/
+}
+
+.toolbar-button-save {
+}
+
+.toolbar-button-save:hover {
+    background-color: rgba(144, 147, 153, 0.34);
+    border-radius: 3px; /*设置圆角*/
+}
+
+
