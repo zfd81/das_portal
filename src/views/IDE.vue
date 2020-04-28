@@ -1,15 +1,21 @@
 <template>
   <el-container>
     <el-aside class="container-left" width="370px">
-      <el-tabs tab-position="left" style="height: 100vh">
-        <el-tab-pane>
+      <el-tabs tab-position="left" v-model="ccd" style="height: 100vh">
+        <el-tab-pane name="first">
           <span slot="label"><i class="el-icon-notebook-2"></i></span>
-          <project-view :project-info="data" @create-catalog="createCatalog" @create-das="createDas" @open-page="openPage"></project-view>
+          <project-view
+            :project-info="projectInfo"
+            @create-catalog="createCatalog"
+            @create-das="createDas"
+            @open-conn="openPage"
+            @open-user="openUserPage"
+          ></project-view>
         </el-tab-pane>
         <el-tab-pane style="height:100vh;overflow-y:auto;overflow-x:auto;">
           <span slot="label"><i class="el-icon-s-grid"></i></span>
-          <project-list @create-project="createProject" @show-project="showProject"></project-list>
-          <project-creator :visible="dialogVisible" @hidden="dialogVisible = false" @success="aaa" style="text-align: left"></project-creator>
+          <navigator-view ref="ProjectList" @query="query" @create="createProject" @show="showProject" @open="open"></navigator-view>
+          <project-creator :visible="dialogVisible" @hidden="dialogVisible = false" @success="success" style="text-align: left"></project-creator>
         </el-tab-pane>
       </el-tabs>
       <i class="el-icon-setting icon-setting" @click="showSettingMenu"></i>
@@ -20,14 +26,7 @@
     </el-aside>
     <el-container>
       <el-main class="container-main">
-        <el-tabs
-          v-model="editableTabsValue"
-          type="border-card"
-          @tab-click="handleClick"
-          @tab-remove="removeTab"
-          closable
-          style="height: calc(100vh - 270px);overflow-y:auto;"
-        >
+        <el-tabs v-model="editableTabsValue" type="border-card" @tab-remove="removeTab" closable style="height: calc(100vh - 270px);overflow-y:auto;">
           <el-tab-pane :key="item.name" v-for="(item, index) in editableTabs" :name="item.name">
             <span slot="label">
               <i v-if="item.type == 'ads'" class="iconfont icon-Code" style="color: #42b983"></i>
@@ -35,7 +34,7 @@
               {{ item.title }}
             </span>
             <keep-alive>
-              <component v-bind:is="item.content" :ref="item.name"></component>
+              <component v-bind:is="item.content" :ref="item.name" @success="success"></component>
             </keep-alive>
           </el-tab-pane>
         </el-tabs>
@@ -64,26 +63,61 @@
 
 <script>
 import ProjectView from "./ProjectView";
-import ProjectList from "./ProjectList";
-import ProjectCreator from "./ProjectCreator";
-import ProjectEditor from "./ProjectEditor";
-import testData from "../data";
+import NavigatorView from "./NavigatorView";
+import ProjectCreator from "./pages/ProjectCreator";
+import ProjectEditor from "./pages/ProjectEditor";
+import Connection from "./pages/Connection";
+import UserProject from "./pages/UserProject";
 export default {
   name: "IDE",
   data() {
     return {
+      ccd: "",
       menuVisible: false,
       tabIndex: 0,
       editableTabsValue: "2",
       editableTabs: [],
-      dialogVisible: false,
-      data: testData.proData
+      dialogVisible: false
     };
   },
+  computed: {
+    projectInfo() {
+      return this.$store.state.ide.projectInfo;
+    }
+  },
   methods: {
-    aaa() {
-      debugger;
-      alert("aaa");
+    query(val) {
+      this.$axios
+        .get("/auth/ide/project/user/", {
+          params: {
+            codeOrName: val
+          },
+          paramsSerializer: params => {
+            return this.$qs.stringify(params, {
+              arrayFormat: "repeat"
+            });
+          }
+        })
+        .then(response => {
+          this.$store.commit("setProjects", response.data);
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    open(item) {
+      this.loadProject(item.code);
+      this.ccd = "first";
+    },
+    loadProject(code) {
+      this.$axios
+        .get("/auth/ide/project_view/".concat(code))
+        .then(response => {
+          this.$store.commit("loadProject", response.data);
+        })
+        .catch(error => {
+          console.log(error);
+        });
     },
     showSettingMenu(event) {
       let menu;
@@ -97,29 +131,89 @@ export default {
     hiddenSettingMenu() {
       this.menuVisible = false;
     },
-    createCatalog() {
+    createCatalog(data) {
       this.$prompt("请输入目录名", "创建目录", {
         confirmButtonText: "确定",
         cancelButtonText: "取消"
       })
         .then(({ value }) => {
-          this.$message({
-            type: "success",
-            message: "你的邮箱是: " + value
-          });
+          if (value != null && value.trim() != "") {
+            let form = {
+              name: value,
+              parent: data.id,
+              project: this.projectInfo[0].id
+            };
+            this.$axios
+              .post("/auth/ide/catalog", form)
+              .then(response => {
+                if (response.status == 200) {
+                  this.loadProject(this.projectInfo[0].id);
+                  this.$message({
+                    type: "success",
+                    message: value + "目录创建成功"
+                  });
+                } else {
+                  this.$message.error(response.data.msg);
+                }
+              })
+              .catch(error => {
+                this.$notify.error({
+                  title: "错误",
+                  message: error
+                });
+              });
+          }
         })
         .catch(() => {
           this.$message({
             type: "info",
-            message: "取消输入"
+            message: "取消创建目录"
           });
         });
     },
     createDas() {
       this.dialogVisible = true;
     },
-    openPage(type) {
-      alert(type);
+    openPage(id) {
+      debugger;
+      let tabName = "_ConnectionTab";
+      let notExist = true;
+      this.editableTabs.forEach((tab, index) => {
+        if (tab.name === tabName) {
+          notExist = false;
+          return;
+        }
+      });
+      if (notExist) {
+        this.editableTabs.push({
+          title: "数据库连接",
+          name: tabName,
+          type: "page",
+          content: Connection
+        });
+      }
+      this.editableTabsValue = tabName;
+      //this.$refs.ProjectDetailsTab[0].init(item.code, item.identity);
+    },
+    openUserPage() {
+      let tabName = "_UserProjectTab";
+      let notExist = true;
+      this.editableTabs.forEach((tab, index) => {
+        if (tab.name === tabName) {
+          notExist = false;
+          return;
+        }
+      });
+      if (notExist) {
+        this.editableTabs.push({
+          title: "项目开发者",
+          name: tabName,
+          type: "page",
+          content: UserProject
+        });
+      }
+      this.editableTabsValue = tabName;
+      this.$refs[tabName][0].load();
     },
     createProject() {
       this.dialogVisible = true;
@@ -143,6 +237,7 @@ export default {
         });
       }
       this.editableTabsValue = tabName;
+      this.$refs.ProjectDetailsTab[0].init(item.code, item.identity);
     },
     removeTab(targetName) {
       let tabs = this.editableTabs;
@@ -159,13 +254,23 @@ export default {
       }
       this.editableTabsValue = activeName;
       this.editableTabs = tabs.filter(tab => tab.name !== targetName);
+    },
+    success(pageType) {
+      if (pageType == "ProjectEditor") {
+        this.$refs.ProjectList.refresh();
+      }
     }
   },
   components: {
     ProjectView,
-    ProjectList,
+    NavigatorView,
     ProjectCreator,
-    ProjectEditor
+    ProjectEditor,
+    Connection,
+    UserProject
+  },
+  mounted() {
+    this.query();
   }
 };
 </script>

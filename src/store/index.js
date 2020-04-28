@@ -11,7 +11,11 @@ export default new Vuex.Store({
     qaz: null,
     wsx: null,
     user: {},
-    sourceViewName: ""
+    sourceViewName: "",
+    ide: {
+      projects: [],
+      projectInfo: []
+    }
   },
   mutations: mutations,
   actions: actions,

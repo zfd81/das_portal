@@ -12,7 +12,6 @@ import util from "./util";
 import "./assets/theme/ide.css";
 //import "./assets/icons/iconfont.css";
 import App from "./App.vue";
-import PageHeader from "./components/PageHeader";
 
 Vue.config.productionTip = true; //阻止启动生产消息,开发模式下为true,生产模式下为false
 Vue.prototype.$axios = Axios;
@@ -62,7 +61,6 @@ Object.keys(filters).forEach(key => {
   Vue.filter(key, filters[key]);
 });
 Vue.use(util);
-Vue.use(PageHeader);
 
 new Vue({
   router,

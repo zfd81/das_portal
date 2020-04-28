@@ -1,7 +1,7 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import store from "@/store";
-import Login from "@/views/Login";
+import Login from "@/views/pages/Login";
 
 Vue.use(VueRouter);
 
@@ -13,11 +13,6 @@ const routes = [
       title: "登陆"
     },
     component: Login
-  },
-  {
-    path: "/dasp",
-    name: "Dasp",
-    component: () => import(/* webpackChunkName: "about" */ "../views/Dasp.vue")
   },
   {
     path: "/ide",

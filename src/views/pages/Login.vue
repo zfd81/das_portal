@@ -1,7 +1,7 @@
 <template>
   <div>
     <div id="u2560">
-      <img id="u2561_img" src="../assets/login_bj.jpg" />
+      <img id="u2561_img" src="../../assets/login_bj.jpg" />
       <div id="u2563_div" class=""></div>
       <div id="u2567" class="ax_default _一级标题">
         <div id="u2568" class="text" style="visibility: visible;">
@@ -77,6 +77,7 @@ export default {
                 this.$store.commit("login", {
                   headers: response.headers,
                   user: {
+                    id: response.data.id,
                     name: response.data.name,
                     fullName: response.data.full_name
                   }

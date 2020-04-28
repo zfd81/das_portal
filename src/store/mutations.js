@@ -16,6 +16,12 @@ const mutations = {
   },
   sourceViewName(state, name) {
     state.sourceViewName = name;
+  },
+  setProjects(state, payload) {
+    state.ide.projects = payload;
+  },
+  loadProject(state, payload) {
+    state.ide.projectInfo = payload;
   }
 };
 

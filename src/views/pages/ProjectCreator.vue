@@ -47,7 +47,7 @@ export default {
   methods: {
     check() {
       this.$axios
-        .get("/auth/ide/project/code/".concat(this.ruleForm.code))
+        .get("/auth/ide/project/exist/".concat(this.ruleForm.code))
         .then(response => {
           if (response.data.exist) {
             this.successVisible = false;
