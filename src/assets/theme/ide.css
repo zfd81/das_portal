@@ -96,17 +96,30 @@ body {
 }
 
 
-/* footer窗体样式 */
+/* 编辑器样式 */
+.editor {
+    text-align: left;
+    font-size: 23px;
+    border: solid #d9d9d9;
+    border-width: 1px 1px 1px 0px;
+}
 .toolbar {
-    position: absolute;
-    right: 19px;
-    bottom: 236px;
+    background-color: #f2f6fc;
+    height: 37px;
+    display: flex;
+    align-items: center;
+    text-align: left;
+    border-bottom: 1px solid #c1c4ca;
 }
 .toolbar-button {
-    margin-right: 15px;
+    margin-left: 5px;
+    margin-right: 10px;
     font-size: 23px !important;
 }
 
+.divider{
+    color: #c1c4ca;
+}
 .toolbar-button-run {
     color: #23ee44;
 }
@@ -134,3 +147,6 @@ body {
 }
 
 
+.el-tabs--border-card> .el-tabs__content {
+    padding: 0px;
+}

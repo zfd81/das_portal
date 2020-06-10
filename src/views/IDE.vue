@@ -27,7 +27,7 @@
     <el-container>
       <el-main class="container-main">
         <el-tabs v-model="editableTabsValue" type="border-card" @tab-remove="removeTab" closable style="height: calc(100vh - 270px);overflow-y:auto;">
-          <el-tab-pane :key="item.name" v-for="(item, index) in editableTabs" :name="item.name">
+          <el-tab-pane :key="item.name" v-for="(item, index) in editableTabs" :name="item.name" style="padding: 0px">
             <span slot="label">
               <i v-if="item.type == 'ads'" class="iconfont icon-Code" style="color: #42b983"></i>
               <i v-if="item.type == 'page'" class="el-icon-document"></i>
@@ -51,11 +51,6 @@
             <span slot="label" style="padding-left: 10px;padding-right: 10px">输出</span>
           </el-tab-pane>
         </el-tabs>
-        <div class="toolbar">
-          <i class="iconfont icon-bofang1 toolbar-button toolbar-button-run"></i>
-          <i class="iconfont icon-tingzhi-shixin toolbar-button toolbar-button-stop"></i>
-          <i class="iconfont icon-baocun toolbar-button toolbar-button-save"></i>
-        </div>
       </el-footer>
     </el-container>
   </el-container>
@@ -68,6 +63,7 @@ import ProjectCreator from "./pages/ProjectCreator";
 import ProjectEditor from "./pages/ProjectEditor";
 import Connection from "./pages/Connection";
 import UserProject from "./pages/UserProject";
+import ServEditor from "./pages/ServEditor";
 export default {
   name: "IDE",
   data() {
@@ -86,6 +82,25 @@ export default {
     }
   },
   methods: {
+    dateFormat(fmt, date) {
+      let ret;
+      const opt = {
+        "Y+": date.getFullYear().toString(), // 年
+        "m+": (date.getMonth() + 1).toString(), // 月
+        "d+": date.getDate().toString(), // 日
+        "H+": date.getHours().toString(), // 时
+        "M+": date.getMinutes().toString(), // 分
+        "S+": date.getSeconds().toString() // 秒
+        // 有其他格式化字符需求可以继续添加，必须转化成字符串
+      };
+      for (let k in opt) {
+        ret = new RegExp("(" + k + ")").exec(fmt);
+        if (ret) {
+          fmt = fmt.replace(ret[1], ret[1].length == 1 ? opt[k] : opt[k].padStart(ret[1].length, "0"));
+        }
+      }
+      return fmt;
+    },
     query(val) {
       this.$axios
         .get("/auth/ide/project/user/", {
@@ -172,7 +187,16 @@ export default {
         });
     },
     createDas() {
-      this.dialogVisible = true;
+      // let tabName = "_ServEditorTab";
+      let date = new Date();
+      let tabName = this.dateFormat("YYYYmmddHHMMSS", date);
+      this.editableTabs.push({
+        title: "DAS",
+        name: tabName,
+        type: "page",
+        content: ServEditor
+      });
+      this.editableTabsValue = tabName;
     },
     openPage(id) {
       debugger;
@@ -267,7 +291,8 @@ export default {
     ProjectCreator,
     ProjectEditor,
     Connection,
-    UserProject
+    UserProject,
+    ServEditor
   },
   mounted() {
     this.query();
